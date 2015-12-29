@@ -1,3 +1,10 @@
+#added by eggiter
+*.py~
+*.json~
+data/
+utils/
+wrap/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
