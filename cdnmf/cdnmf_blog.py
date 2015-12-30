@@ -7,7 +7,7 @@ from glb import logging
 log = logging.getLogger(__name__)
 
 def run(lmd):
-    num_iter = 50
+    num_iter = 1
     from glb import basepath
     iptdir = os.path.join(basepath, 'data/blog')
     optdir = os.path.join(basepath, 'data/result/blog')

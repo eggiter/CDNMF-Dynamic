@@ -25,7 +25,7 @@ def getcluster_bycore(g, k, U, H):
             list_outlier.append(i)
         elif len(g.nodes()[i].clusters)>1:
             list_overlap.append('{}: {}'.format(i, ', '.join(map(lambda x:str(x), sorted(g.nodes()[i].clusters)))))
-    log.info('\noutliers: {}\n{}\noverlap: {}\n{}'.format(len(list_outlier), list_outlier, len(list_overlap), '\n'.join(list_overlap)))
+    #log.info('\noutliers: {}\n{}\noverlap: {}\n{}'.format(len(list_outlier), list_outlier, len(list_overlap), '\n'.join(list_overlap)))
 
 def getcluster_rest(g, k):
     list_multiple = g.tryoutliers(k)

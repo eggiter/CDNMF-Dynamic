@@ -84,7 +84,7 @@ class Graph:
                     self.__nodes[i].extra['status'] = 2
                 else:
                     q.append(i)            
-        log.info('try outliers: {}'.format(time.time() - start))
+        #log.info('try outliers: {}'.format(time.time() - start))
         
         list_multiple = []
         for i in range(self.__n):
