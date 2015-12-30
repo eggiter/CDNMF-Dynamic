@@ -1,7 +1,8 @@
 #added by eggiter
 *.py~
 *.json~
-data/
+*.csv
+*.txt
 utils/
 wrap/
 
