@@ -26,7 +26,7 @@ def gettime(start, end, interval):
     return (ty, tm), fmt
 
 def run(lmd, interval):
-    num_iter = 50
+    num_iter = 10
     dir_fmt = 'Interval_{}_mon'.format(interval)
     iptdir = os.path.join(basepath, 'data/email/' + dir_fmt)
     optdir = os.path.join(basepath, 'data/result/email/' + dir_fmt)
@@ -35,7 +35,7 @@ def run(lmd, interval):
     list_nmi = []
     start = (2006, 9)
     end = (2010, 8)
-    temp, fmt = gettime(start, end, i)
+    temp, fmt = gettime(start, end, interval)
     first = True
     while temp:
         log.info(fmt + '...')
@@ -76,7 +76,7 @@ def run(lmd, interval):
         ce.get_hubs(g, k, U, path_hubs)
         nmi = sm.compute_nmi(g)
         list_nmi.append(nmi)
-        print '===NMI===\n',nmi
+        print '===NMI===\n', len(list_nmi), nmi
         temp, fmt = gettime(temp, end, interval)
     print '===RESULT==='
     for e in enumerate(list_nmi):
