@@ -26,7 +26,7 @@ def gettime(start, end, interval):
     return (ty, tm), fmt
 
 def run(lmd, interval):
-    num_iter = 10
+    num_iter = 1
     dir_fmt = 'Interval_{}_mon'.format(interval)
     iptdir = os.path.join(basepath, 'data/email/' + dir_fmt)
     optdir = os.path.join(basepath, 'data/result/email/' + dir_fmt)
@@ -43,11 +43,12 @@ def run(lmd, interval):
         path_gc = os.path.join(optdir, fmt+'.gc')
         ipt_comm1 = os.path.join(iptdir, fmt+'.comm1')
         path_hubs = os.path.join(optdir, fmt+'.hubs.csv')
-        #gc.gen_gc(ipt_edges, path_gc)
+        gc.gen_gc(ipt_edges, path_gc)
         g = Graph()
         sm.create_graph(path_gc, g)
         idx_clst = sm.load_cluster_info(g, ipt_comm1)
         k = idx_clst.num_indices()
+        log.info('num clusters: %d' % k)
         if first:
             lpre = 2.0 ** 32
             for i in range(num_iter):
@@ -71,9 +72,12 @@ def run(lmd, interval):
                 else:
                     log.info('%02d --  %.4f %.4f' % (i+1, LL[-1], lpre))
         gpre = cp.deepcopy(g)
+        '''
         ce.getcluster_bycore(g, k, U, H)
         ce.getcluster_rest(g, k)
         ce.get_hubs(g, k, U, path_hubs)
+        '''
+        getcluster_byx(g, X)
         nmi = sm.compute_nmi(g)
         list_nmi.append(nmi)
         print '===NMI===\n', len(list_nmi), nmi
@@ -81,13 +85,37 @@ def run(lmd, interval):
     print '===RESULT==='
     for e in enumerate(list_nmi):
         print '{}: {}'.format(e[0] + 1, e[1])
+    return list_nmi
+
+def dump_nmi(list_nmi, interval, lmd):
     writer = open(os.path.join(basepath, 'data/result/email/nmi/I{}lmd{}.txt'.format(interval, lmd)), 'w')
     writer.writelines(map(lambda x: str(x) + '\n', list_nmi))
-
+    
+def getcluster_byx(g, X):
+    r, c = X.shape
+    for i in range(r):
+        right = -1
+        for j in range(c):
+            if X.item(i, j) > right:
+                right = X.item(i, j)
+                g.nodes()[i].actual = j
+    
 if __name__ == '__main__':
-    lmds = [0.0, 0.5, 1.0, 5.0, 10]
+    lmds = [0.0, 0.5, 1.0, 10, 100]
+    lmds = [x*0.2 for x in range(11)]
+    lmds = [2,3,4,5]
     ii = [2, 3, 6, 1]
+    ii = [2]
+    n = 10
     for i in ii:
         for lmd in lmds:
-            run(lmd, i)
-
+            list_nmi = []
+            for _ in range(n):
+                list_nmi.append(run(lmd, i))
+            list_avg = []
+            for c in range(len(list_nmi[0])):
+                s = 0.0
+                for r in range(n):
+                    s += list_nmi[r][c]
+                list_avg.append(s/n)
+            dump_nmi(list_avg, i, lmd)
