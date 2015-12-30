@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+import numpy as np
+
 def create_graph(ipt, g):
     lines = open(ipt, 'r').readlines()
     lines = map(lambda x:x.split(), lines)
@@ -39,6 +41,23 @@ def compute_nmi(g):
         list_actual.append(g.nodes()[i].actual)
     return nmi_list(list_expected, list_actual)
 
+def dump_matrix(X, opt):
+    r, c = X.shape
+    writer = open(opt, 'w')
+    for i in range(r):
+        list_write = []
+        for j in range(c):
+            list_write.append(str(X.item(i, j)))
+        writer.write(' '.join(list_write) + '\n')
+
+def load_matrix(ipt):
+    mat = []
+    lines = open(ipt, 'r')
+    lines = map(lambda x:x.strip().split(), lines)
+    for line in lines:
+        mat.append(map(lambda x:float(x), line))
+    return np.asmatrix(mat)
+    
 if __name__ == '__main__':
     from glb import basepath
     import os, json
