@@ -28,8 +28,8 @@ def gettime(start, end, interval):
 def run(lmd, interval):
     num_iter = 1
     dir_fmt = 'Interval_{}_mon'.format(interval)
-    iptdir = os.path.join(basepath, 'data/email/' + dir_fmt)
-    optdir = os.path.join(basepath, 'data/result/email/' + dir_fmt)
+    iptdir = os.path.join(basepath, 'data/emailtemp/' + dir_fmt)
+    optdir = os.path.join(basepath, 'data/result/emailtemp/' + dir_fmt)
     if not os.path.isdir(optdir):
         os.makedirs(optdir)
     list_nmi = []
@@ -88,7 +88,10 @@ def run(lmd, interval):
     return list_nmi
 
 def dump_nmi(list_nmi, interval, lmd):
-    writer = open(os.path.join(basepath, 'data/result/email/nmi/I{}lmd{}.txt'.format(interval, lmd)), 'w')
+    optdir = 'data/result/emailtemp/Interval_{}_mon/nmi/'.format(interval)
+    if not os.path.isdir(optdir):
+        os.makedirs(optdir)
+    writer = open(os.path.join(basepath, optdir + 'lmd{}.txt'.format(lmd)), 'w')
     writer.writelines(map(lambda x: str(x) + '\n', list_nmi))
     
 def getcluster_byx(g, X):
@@ -101,11 +104,8 @@ def getcluster_byx(g, X):
                 g.nodes()[i].actual = j
     
 if __name__ == '__main__':
-    lmds = [0.0, 0.5, 1.0, 10, 100]
     lmds = [x*0.2 for x in range(11)]
-    lmds = [2,3,4,5]
-    ii = [2, 3, 6, 1]
-    ii = [2]
+    ii = [6, 4]
     n = 10
     for i in ii:
         for lmd in lmds:
