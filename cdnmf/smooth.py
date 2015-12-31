@@ -13,6 +13,27 @@ def create_graph(ipt, g):
     for line in lines:
         g.add_edge(int(line[0]), int(line[1]))
 
+def load_graph(g, A, list_clst):
+    n, n = A.shape
+    for i in range(n):
+        g.add(i)
+    g.indexing()
+    for i in range(n):
+        for j in range(n):
+            if A.item(i, j) > 0:
+                g.add_edge(i, j)
+    #load cluster
+    from index import Index
+    idx_clst = Index()
+    for clst in list_clst:
+        idx_clst.add(clst)
+    idx_clst.index()
+    for e in enumerate(list_clst):
+        nodeidx = e[0]
+        clst = idx_clst.get_idx_by_key(e[1])
+        g.nodes()[nodeidx].expected = clst
+    return idx_clst
+            
 def load_cluster_info(g, ipt):
     from index import Index
     idx_clst = Index()
