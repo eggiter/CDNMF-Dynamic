@@ -78,7 +78,30 @@ def load_matrix(ipt):
     for line in lines:
         mat.append(map(lambda x:float(x), line))
     return np.asmatrix(mat)
-    
+
+def cell(lst):
+    obj_arr = np.zeros((len(lst),), dtype=np.object)
+    for i in range(len(lst)):
+        obj_arr[i] = np.array(lst[i], dtype=np.uint8)
+    return obj_arr
+        
+def get_errmat(g, k):
+    me = [[0]*k for _ in range(g.n())]
+    ma = [[0]*k for _ in range(g.n())]
+    for i in range(g.n()):
+        col = g.nodes()[i].expected
+        me[i][col] = 1
+        col = g.nodes()[i].actual
+        ma[i][col] = 1
+    return me, ma
+
+def compute_error(g, k):
+    me, ma = get_errmat(g, k)
+    me = np.asmatrix(me)
+    ma = np.asmatrix(ma)
+    error = np.trace((me*me.T-ma*ma.T)*(me*me.T-ma*ma.T).T)
+    return error
+
 if __name__ == '__main__':
     from glb import basepath
     import os, json
