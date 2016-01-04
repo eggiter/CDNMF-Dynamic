@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import os, copy as cp
+import os, copy as cp, scipy.io as sio
 from graph import Graph
 from glb import basepath, logging
 import giantcomponent as gc, smooth as sm, core, coreExt as ce
@@ -18,18 +18,21 @@ def load_mat(ipt):
         list_clsts.append(list_clst)
     return mat['W_Cube'][0], list_clsts
 
-def run(filename, lmd):
+def run(filename, lmd, times):
     num_iter = 1
-    '''
+    
     if filename != 'syn_T_10_z_4_nC_1_bS_128_aD_16.mat':
-        return None
-    '''
+        return None, None
+    
     ipt = os.path.join(basepath, 'data/syn/' + filename)
     optdir = os.path.join(basepath, 'data/result/syn/{}'.format(filename[:-4]))
     if not os.path.isdir(optdir):
         os.makedirs(optdir)
     list_nmi = []
+    list_err = []
     first = True
+    list_errmat_expected = []
+    list_errmat_actual = []
     As, list_clsts = load_mat(ipt)
     for idx in range(10):
         log.info('%d ...' % idx)
@@ -62,19 +65,27 @@ def run(filename, lmd):
                 else:
                     log.info('%02d --  %.4f %.4f' % (i+1, LL[-1], lpre))
         gpre = cp.deepcopy(g)
-        
+        '''
         ce.getcluster_bycore(g, k, U, H)
         ce.getcluster_rest(g, k)
         #ce.get_hubs(g, k, U, path_hubs)
-        
-        #getcluster_byx(g, X)
+        '''
+        getcluster_byx(g, X)
         nmi = sm.compute_nmi(g)
         list_nmi.append(nmi)
+        e, a = sm.get_errmat(g, k)
+        list_errmat_expected.append(e)
+        list_errmat_actual.append(a)
+        list_err.append(sm.compute_error(g, k))
         print '===NMI===\n', len(list_nmi), nmi
+    d = {}
+    d['errmat_expected'] = sm.cell(list_errmat_expected)
+    d['errmat_actual'] =  sm.cell(list_errmat_actual)
+    sio.savemat(os.path.join(optdir, 'lmd{}_times{}.mat'.format(lmd, times)), d)
     print '===RESULT==='
     for e in enumerate(list_nmi):
         print '{}: {}'.format(e[0] + 1, e[1])
-    return list_nmi
+    return list_nmi, list_err
 
 def dump_nmi(list_nmi, filename, lmd):
     optdir = 'data/result/syn/{}/nmi/'.format(filename[:-4])
@@ -82,6 +93,22 @@ def dump_nmi(list_nmi, filename, lmd):
         os.makedirs(optdir)
     writer = open(os.path.join(basepath, optdir + 'lmd{}.txt'.format(lmd)), 'w')
     writer.writelines(map(lambda x: str(x) + '\n', list_nmi))
+
+def dump_err(list_err, filename, lmd):
+    optdir = 'data/result/syn/{}/err/'.format(filename[:-4])
+    if not os.path.isdir(optdir):
+        os.makedirs(optdir)
+    writer = open(os.path.join(basepath, optdir + 'lmd{}.txt'.format(lmd)), 'w')
+    writer.writelines(map(lambda x: str(x) + '\n', list_err))
+    
+def get_avg(lst, n):
+    list_avg = []
+    for c in range(len(lst[0])):
+        s = 0.0
+        for r in range(n):
+            s += lst[r][c]
+        list_avg.append(s/n)
+    return list_avg
     
 def getcluster_byx(g, X):
     r, c = X.shape
@@ -94,22 +121,21 @@ def getcluster_byx(g, X):
 
 if __name__ == '__main__':
     lmds = [x*0.2 for x in range(11)]
-    n = 10
+    n = 3
     iptdir = 'data/syn'
     for f in filter(lambda x: '.mat' in x, os.listdir(iptdir)):
         for lmd in lmds:
             list_nmi = []
+            list_err = []
             for _ in range(n):
-                ret = run(f, lmd)
-                if not ret:
+                nmis, errs = run(f, lmd, _)
+                if not nmis:
                     break
-                list_nmi.append(ret)
-            if not ret:
+                list_nmi.append(nmis)
+                list_err.append(errs)
+            if not nmis:
                 break
-            list_avg = []
-            for c in range(len(list_nmi[0])):
-                s = 0.0
-                for r in range(n):
-                    s += list_nmi[r][c]
-                list_avg.append(s/n)
+            list_avg = get_avg(list_nmi, n)
             dump_nmi(list_avg, f, lmd)
+            list_avg = get_avg(list_err, n)
+            dump_err(list_avg, f, lmd)
