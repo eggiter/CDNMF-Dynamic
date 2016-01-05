@@ -52,7 +52,7 @@ def plot(list_data, list_label, cnt):
     pl.figure(cnt)
     list_print = range(len(list_data))
     x = range(1, len(list_data[0])+1)
-    filename = 'data/nmi/nmi_' + list_label[-1]
+    filename = 'data/nmi/syn/nmi_' + list_label[-1]
     for p in list_print:
         pl.plot(x, list_data[p], label = list_label[p])
     
@@ -65,7 +65,7 @@ def plot(list_data, list_label, cnt):
 def run():
     iptdir = 'data/cmp/syn'
     cnt = 0
-    for f in os.listdir(iptdir):
+    for f in filter(lambda x:'.mat' in x, os.listdir(iptdir)):
         ipt = os.path.join(iptdir, f)
         list_nmi = get_nmi(ipt)
         list_data = []
