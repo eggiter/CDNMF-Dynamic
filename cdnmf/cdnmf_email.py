@@ -76,12 +76,12 @@ def run(lmd, interval, times):
                 else:
                     log.info('%02d --  %.4f %.4f' % (i+1, LL[-1], lpre))
         gpre = cp.deepcopy(g)
-        
+        '''
         ce.getcluster_bycore(g, k, U, H)
         ce.getcluster_rest(g, k)
         #ce.get_hubs(g, k, U, path_hubs)
-        
-        #getcluster_byx(g, X)
+        '''
+        getcluster_byx(g, X)
         nmi = sm.compute_nmi(g)
         list_nmi.append(nmi)
         e, a = sm.get_errmat(g, k)
@@ -132,12 +132,12 @@ def getcluster_byx(g, X):
                 g.nodes()[i].actual = j
 
 global bd
-bd = 'data/result/emailtemp5'
+bd = 'data/result/emailtemp6'
 
 if __name__ == '__main__':
     lmds = [x*0.2 for x in range(11)]
+    lmds = [0.0, 1.0, 2.0]
     ii = [6, 4, 3, 2, 1]
-    ii = [4]
     n = 20
     for i in ii:
         for lmd in lmds:

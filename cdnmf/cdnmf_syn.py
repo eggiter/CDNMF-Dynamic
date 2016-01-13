@@ -25,7 +25,7 @@ def run(filename, lmd, times):
         return None, None
     
     ipt = os.path.join(basepath, 'data/syn/' + filename)
-    optdir = os.path.join(basepath, 'data/result/syn2/{}'.format(filename[:-4]))
+    optdir = os.path.join(basepath, 'data/result/syn/{}'.format(filename[:-4]))
     if not os.path.isdir(optdir):
         os.makedirs(optdir)
     list_nmi = []
@@ -65,12 +65,12 @@ def run(filename, lmd, times):
                 else:
                     log.info('%02d --  %.4f %.4f' % (i+1, LL[-1], lpre))
         gpre = cp.deepcopy(g)
-        
+        '''
         ce.getcluster_bycore(g, k, U, H)
         ce.getcluster_rest(g, k)
         #ce.get_hubs(g, k, U, path_hubs)
-        
-        #getcluster_byx(g, X)
+        '''
+        getcluster_byx(g, X)
         nmi = sm.compute_nmi(g)
         list_nmi.append(nmi)
         e, a = sm.get_errmat(g, k)
@@ -88,14 +88,14 @@ def run(filename, lmd, times):
     return list_nmi, list_err
 
 def dump_nmi(list_nmi, filename, lmd):
-    optdir = 'data/result/syn2/{}/nmi/'.format(filename[:-4])
+    optdir = 'data/result/syn/{}/nmi/'.format(filename[:-4])
     if not os.path.isdir(optdir):
         os.makedirs(optdir)
     writer = open(os.path.join(basepath, optdir + 'lmd{}.txt'.format(lmd)), 'w')
     writer.writelines(map(lambda x: str(x) + '\n', list_nmi))
 
 def dump_err(list_err, filename, lmd):
-    optdir = 'data/result/syn2/{}/err/'.format(filename[:-4])
+    optdir = 'data/result/syn/{}/err/'.format(filename[:-4])
     if not os.path.isdir(optdir):
         os.makedirs(optdir)
     writer = open(os.path.join(basepath, optdir + 'lmd{}.txt'.format(lmd)), 'w')
@@ -121,7 +121,7 @@ def getcluster_byx(g, X):
 
 if __name__ == '__main__':
     lmds = [x*0.2 for x in range(11)]
-    n = 20
+    n = 10
     iptdir = 'data/syn'
     for f in filter(lambda x: '.mat' in x, os.listdir(iptdir)):
         for lmd in lmds:

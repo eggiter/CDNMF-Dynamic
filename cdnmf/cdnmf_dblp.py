@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 def run(lmd, which, times):
     num_iter = 1
-    iptdir = os.path.join(basepath, 'data/bench/' + which)
+    iptdir = os.path.join(basepath, 'data/dblp/' + which)
     optdir = os.path.join(basepath, bd + '/' + which)
     if not os.path.isdir(optdir):
         os.makedirs(optdir)
@@ -17,7 +17,7 @@ def run(lmd, which, times):
     first = True
     list_errmat_expected = []
     list_errmat_actual = []
-    for i in range(1, 11):
+    for i in range(9):
         fmt = '%s.t%02d' % (which, i)
         log.info(fmt + '...')
         ipt_edges = os.path.join(iptdir, fmt + '.edges')
@@ -109,13 +109,13 @@ def getcluster_byx(g, X):
                 g.nodes()[i].actual = j
 
 global bd
-bd = 'data/result/bench10'
+bd = 'data/result/dblp'
 
 if __name__ == '__main__':
     lmds = [x*0.2 for x in range(11)]
     lmds = [0.0, 1.0]
-    ii = ['switch', 'birthdeath', 'expand', 'hide', 'mergesplit']
-    n = 10
+    ii = ['dblpfix3']
+    n = 1
     for i in ii:
         for lmd in lmds:
             list_nmi = []
